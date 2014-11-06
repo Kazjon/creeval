@@ -95,12 +95,10 @@ class Predictor:
 					exploreParams = {0}
 					data = np.genfromtxt('{1}',delimiter=',')
 					return run(data, asciiparams, exploreParams)
-			""".format(str(self.exploreParameters), experiment_dir+"/data.csv")))
+			""".format(str(self.exploreParams), experiment_dir+"/data.csv")))
 
 	def runSpearmint(self, name):
-		#subprocess.call("spearmint {0} --driver=local --method=GPEIOptChooser".format(os.path.abspath(os.path.join(self.scratchPath,name+".pb"))), shell=True)
 		options, expt_dir = self.get_options([os.path.abspath(os.path.join(self.scratchPath,name))])
-		#options, expt_dir = self.get_options(["/Applications/Spearmint/examples/noisy"])
 
 		resources = main.parse_resources_from_config(options)
 

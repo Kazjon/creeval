@@ -70,9 +70,9 @@ if __name__ == "__main__":
 	s = [model.Selector.EverythingSelector]
 	i = [model.Interpreter.LiteralInterpreter]
 	p = [model.Predictor.GMMPredictor]
-	dspace = model.DescriptionSpace.DescriptionSpace(s ,i, p)
+	dspace = model.DescriptionSpace.DescriptionSpace(s, i, p)
 	g = model.Generator.RandomGenerator(dspace, domain)
 	m = g.generate()
 	m.printModel()
-	#p[0].train(np.genfromtxt("model/test/strats.csv", delimiter=',', skip_header=1)[:,1:])
+	m.p.train(np.genfromtxt("model/test/strats.csv", delimiter=',', skip_header=1)[:,1:])
 
