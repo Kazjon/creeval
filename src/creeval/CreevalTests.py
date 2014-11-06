@@ -65,7 +65,7 @@ def replayReadTest():
 
 if __name__ == "__main__":
 	strats, fields, units = replayReadTest()
-	domain = Domain(units)
+	domain = Domain(units, "test/")
 	domain.initialise(strats)
 	s = [model.Selector.EverythingSelector]
 	i = [model.Interpreter.LiteralInterpreter]
@@ -73,8 +73,6 @@ if __name__ == "__main__":
 	dspace = model.DescriptionSpace.DescriptionSpace(s ,i, p)
 	g = model.Generator.RandomGenerator(dspace, domain)
 	m = g.generate()
-	print m.s
-	print m.i
-	print m.p
+	m.printModel()
 	#p[0].train(np.genfromtxt("model/test/strats.csv", delimiter=',', skip_header=1)[:,1:])
 

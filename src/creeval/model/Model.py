@@ -11,3 +11,8 @@ class Model:
 		self.s = s
 		self.i = i
 		self.p = p
+
+	def printModel(self):
+		self.s.printStats()
+		self.i.printStats()
+		self.p.printStats()

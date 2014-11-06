@@ -26,7 +26,7 @@ class RandomGenerator(Generator):
 		comps = []
 		for compclass in [s,i,p]:
 			compParams = {}
-			for pk,pv in compclass.exploreParams.iteritems():
+			for pk,pv in compclass.exploreParamSpace.iteritems():
 				if type(pv) is list:
 					if type(pv[0]) is str:
 						compParams[pk] = random.choice(pv)
@@ -35,4 +35,4 @@ class RandomGenerator(Generator):
 				elif type(pv) is tuple:
 						compParams[pk] = random.uniform(pv[0],pv[1])
 			comps.append(compclass(self.domain, compParams))
-		return model.Model.Model(s,i,p)
+		return model.Model.Model(*comps)

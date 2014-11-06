@@ -82,8 +82,8 @@ class Predictor:
 
 
 class GMMPredictor(Predictor):
-	exploreParameterSpace = {"n_components" : range(1, 10)}
-	exploitParameterSpace = {"min_covar": (1e-6, 1e-1), "covariance_type": ["spherical", "tied", "diag", "full"]}
+	exploreParamSpace = {"n_components" : range(1, 10)}
+	exploitParamSpace = {"min_covar": (1e-6, 1e-1), "covariance_type": ["spherical", "tied", "diag", "full"]}
 	spearmintImports =  """\
 							from sklearn.mixture import GMM
 						"""
@@ -101,7 +101,7 @@ class GMMPredictor(Predictor):
 
 	def train(self,dataPath):
 		name = self.__class__.__name__+str(id(self))
-		self.genSpearmintTemplate(self.exploitParameterSpace, name)
+		self.genSpearmintTemplate(self.exploitParamSpace, name)
 		self.genModelScript(os.path.abspath(dataPath), textwrap.dedent(self.spearmintImports), textwrap.dedent(self.spearmintRun), name)
 		self.runSpearmint(name)
 

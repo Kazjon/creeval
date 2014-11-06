@@ -17,8 +17,10 @@ class Domain:
 	artefacts = []
 	pSpace = []
 	performanceSpace = None
+	scratchPath = None
 
-	def __init__(self, attributes):
+	def __init__(self, attributes, scratchPath = ""):
+		self.scratchPath = scratchPath
 		self.featureNames = attributes
 		for name, ftype in enumerate(self.featureNames):
 			if ftype == "real":

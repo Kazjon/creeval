@@ -16,21 +16,23 @@ from spearmint.utils.parsing import parse_db_address
 
 from spearmint import main
 
-import os.path, textwrap, optparse, importlib, sys, os, time, csv
+import os.path, textwrap, optparse, importlib, sys, os, time, csv, pprint
 
 class Predictor:
 	domain = None
-	exploreParameters = {}
-	exploitParameters = {}
-	exploitParameterSpace = {}
-	exploreParameterSpace = {}
+	exploreParams = {}
+	exploitParams = {}
+	exploitParamSpace = {}
+	exploreParamSpace = {}
 	scratchPath = None
 	spearmintRun = ""
 	spearmintImports = ""
 
-	def __init__(self, domain, exploreParams, scratchPath):
-		self.exploreParameters = exploreParams
-		self.scratchPath = scratchPath
+	def __init__(self, domain, exploreParams = {}, exploitParams = {}):
+		self.domain = domain
+		self.exploreParams = exploreParams
+		self.exploitParams = exploitParams
+		self.scratchPath = domain.scratchPath
 
 	def train(self,artefacts):
 		pass
@@ -207,7 +209,7 @@ class Predictor:
 		if not os.path.exists(expdir):
 			os.makedirs(expdir)
 		self.writeData(data, expdir)
-		self.genSpearmintTemplate(self.exploitParameterSpace, name)
+		self.genSpearmintTemplate(self.exploitParamSpace, name)
 		self.genModelScript(textwrap.dedent(self.spearmintImports), textwrap.dedent(self.spearmintRun), name)
 		self.runSpearmint(name)
 
@@ -216,13 +218,23 @@ class Predictor:
 			writer = csv.writer(csvf)
 			writer.writerows(data)
 
+	def printStats(self):
+		print "----",self.__class__.__name__,"----"
+		print "ExploreParamSpace:"
+		pprint.pprint(self.exploreParamSpace)
+		print "ExploreParams:"
+		pprint.pprint(self.exploreParams)
+		print "ExploitParamSpace:"
+		pprint.pprint(self.exploitParamSpace)
+		print "ExploitParams:"
+		pprint.pprint(self.exploitParams)
 
 
 
 
 class GMMPredictor(Predictor):
-	exploreParameterSpace = {"n_components" : range(1, 10)}
-	exploitParameterSpace = {"min_covar": (1e-8, 1e-2), "covariance_type": ["spherical", "tied", "diag", "full"]}
+	exploreParamSpace = {"n_components" : range(1, 10)}
+	exploitParamSpace = {"min_covar": (1e-8, 1e-2), "covariance_type": ["spherical", "tied", "diag", "full"]}
 	spearmintImports =  """\
 							from sklearn.mixture import GMM
 						"""
@@ -234,8 +246,8 @@ class GMMPredictor(Predictor):
 							return gmm.bic(data)
 					"""
 
-	def __init__(self, domain, exploreParams, scratchPath = ""):
-		Predictor.__init__(self, domain, exploreParams, scratchPath)
+	def __init__(self, domain, exploreParams):
+		Predictor.__init__(self, domain, exploreParams)
 
 
 	def predict(self, artefact):
