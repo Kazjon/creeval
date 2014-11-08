@@ -28,10 +28,7 @@ class RandomGenerator(Generator):
 			compParams = {}
 			for pk,pv in compclass.exploreParamSpace.iteritems():
 				if type(pv) is list:
-					if type(pv[0]) is str:
 						compParams[pk] = random.choice(pv)
-					elif type(pv[0]) is int:
-						compParams[pk] = random.randint(pv[0],pv[1])
 				elif type(pv) is tuple:
 						compParams[pk] = random.uniform(pv[0],pv[1])
 			comps.append(compclass(self.domain, compParams))

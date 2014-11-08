@@ -19,8 +19,7 @@ class Domain:
 	performanceSpace = None
 	scratchPath = None
 
-	def __init__(self, attributes, scratchPath = ""):
-		self.scratchPath = scratchPath
+	def __init__(self, attributes):
 		self.featureNames = attributes
 		for name, ftype in enumerate(self.featureNames):
 			if ftype == "real":
@@ -35,7 +34,7 @@ class Domain:
 			pass # Do evaluaty things to our new artefacts!
 
 	def initialise(self,artefacts):
-		self.addData(artefacts, evaluate=False)
+		self.artefacts = artefacts
 		self.pSpace = PerformanceSpace(self)
 		return self.pSpace
 

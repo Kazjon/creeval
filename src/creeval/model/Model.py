@@ -16,3 +16,6 @@ class Model:
 		self.s.printStats()
 		self.i.printStats()
 		self.p.printStats()
+
+	def train(self):
+		self.p.train(self.i.interpret(self.s.select()))

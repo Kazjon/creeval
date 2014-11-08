@@ -15,6 +15,7 @@ from spearmint.resources.resource import print_resources_status
 from spearmint.utils.parsing import parse_db_address
 
 from spearmint import main
+import numpy as np
 
 import os.path, textwrap, optparse, importlib, sys, os, time, csv, pprint
 
@@ -45,7 +46,7 @@ class Predictor:
 
 	# Tuples indicate min and max values for real-valued params, lists indicate possible values -- lists of strings for categorical, lists of ints for ordinal
 	def genSpearmintTemplate(self,params, fname):
-		data = {"language": "PYTHON", "main-file":fname+".py", "experiment-name": fname, "likelihood": "NOISELESS", "resources": {"my-machine": {"scheduler":"local","max-concurrent":4,"max-finished-jobs":100}}}
+		data = {"language": "PYTHON", "main-file":fname+".py", "experiment-name": fname, "likelihood": "NOISELESS", "resources": {"my-machine": {"scheduler":"local","max-concurrent":8}}}
 		paramdict = {}
 		for k,v in params.iteritems():
 			var = {}
@@ -112,7 +113,10 @@ class Predictor:
 		sys.stderr.write('Using database at %s.\n' % db_address)
 		db = MongoDB(database_address=db_address)
 
-		while True:
+		threshold = 1e-3
+		look_back = 10
+		stopping = False
+		while not stopping:
 			for resource_name, resource in resources.iteritems():
 				jobs = main.load_jobs(db, experiment_name)
 				# resource.printStatus(jobs)
@@ -126,6 +130,7 @@ class Predictor:
 					# Load jobs from DB
 					# (move out of one or both loops?) would need to pass into load_tasks
 					jobs = main.load_jobs(db, experiment_name)
+					#pprint.pprint(main.load_hypers(db, experiment_name))
 
 					# Remove any broken jobs from pending.
 					main.remove_broken_jobs(db, jobs, experiment_name, resources)
@@ -151,10 +156,30 @@ class Predictor:
 					# resource.printStatus(jobs)
 					print_resources_status(resources.values(), jobs)
 
+					stalled = []
+					for task in main.load_task_group(db, options, resource.tasks).tasks.values():
+						performance = task.valid_normalized_data_dict["values"][::-1]
+						stalled.append(0)
+						if len(performance) > look_back:
+							print performance[0:look_back]
+							print "Diffs: "
+							within_thresh = True
+							for i,run in enumerate(performance[0:look_back]):
+								diff = abs(run - performance[i+1])
+								print str(round(diff,2))+", ",
+								if diff > threshold:
+									within_thresh = False
+									print "...No stall"
+									break
+							if within_thresh:
+								stalled[len(stalled)-1] = 1
+					if all(stalled):
+						sys.exit("Stalled!")
 			# If no resources are accepting jobs, sleep
 			# (they might be accepting if suggest takes a while and so some jobs already finished by the time this point is reached)
 			if main.tired(db, experiment_name, resources):
 				time.sleep(options.get('polling-time', 5))
+
 
 	def get_options(self, override_args = None):
 		parser = optparse.OptionParser(usage="usage: %prog [options] directory")
@@ -218,13 +243,13 @@ class Predictor:
 
 	def printStats(self):
 		print "----",self.__class__.__name__,"----"
-		print "ExploreParamSpace:"
+		print "ExploreParamSpace:\n  ",
 		pprint.pprint(self.exploreParamSpace)
-		print "ExploreParams:"
+		print "ExploreParams:\n  ",
 		pprint.pprint(self.exploreParams)
-		print "ExploitParamSpace:"
+		print "ExploitParamSpace:\n  ",
 		pprint.pprint(self.exploitParamSpace)
-		print "ExploitParams:"
+		print "ExploitParams:\n  ",
 		pprint.pprint(self.exploitParams)
 
 

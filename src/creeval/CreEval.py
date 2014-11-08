@@ -21,15 +21,22 @@ class CreEval:
 	generator = None
 	dirpath = None
 
-	def __init__(self, domain, dirpath):#, pruner=Pruner(), generator=Generator()):
+	def __init__(self, dirpath, domain, generator=None):#, pruner=Pruner(), generator=Generator()):
 		self.domain = domain
+		self.domain.scratchPath = dirpath
 		self.dirpath = dirpath
 		#self.pruner = prune
-		#self.generator = gen
+		self.generator = generator
 		#...
 
 	def addInitialData(self, data):
-		pSpace = self.domain.initialise(data) #adds the data, then creates a pSpace
+		self.pSpace = self.domain.initialise(data) #adds the data, then creates a pSpace
+
+	def generateModel(self):
+		model = self.generator.generate()
+		self.known_models.append(model)
+		self.active_models.append(model)
+		return model
 
 if __name__ == "__main__":
 	pass

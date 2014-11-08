@@ -1,6 +1,7 @@
 __author__ = 'kazjon'
 
 from Domain import Domain
+from CreEval import CreEval
 import model.Predictor, model.DescriptionSpace, model.Interpreter, model.Selector, model.Generator
 from CreEval import CreEval
 import csv, pprint, os.path, sys
@@ -64,15 +65,27 @@ def replayReadTest():
 	return strats,fields, units
 
 if __name__ == "__main__":
-	strats, fields, units = replayReadTest()
-	domain = Domain(units, "test/")
-	domain.initialise(strats)
+	#replayReadTest()
+
+	#Load text from the replay csv
+	strats = np.genfromtxt("model/test/strats.csv", delimiter=',', names = True)
+	unitnames = list(strats.dtype.names)[1:]
+	strats = strats[unitnames]
+
+	#Set up the Creeval and Domain objects
+	domain = Domain(zip(unitnames,["real"]*len(unitnames)))
+	creeval = CreEval("test/", domain)
+	creeval.addInitialData(strats)
+
+	#Set up the space of possible models
 	s = [model.Selector.EverythingSelector]
 	i = [model.Interpreter.LiteralInterpreter]
 	p = [model.Predictor.GMMPredictor]
 	dspace = model.DescriptionSpace.DescriptionSpace(s, i, p)
-	g = model.Generator.RandomGenerator(dspace, domain)
-	m = g.generate()
+
+	#Generate random models, train them and print them.
+	creeval.generator = model.Generator.RandomGenerator(dspace, domain)
+	m = creeval.generateModel()
 	m.printModel()
-	m.p.train(np.genfromtxt("model/test/strats.csv", delimiter=',', skip_header=1)[:,1:])
+	m.train()
 

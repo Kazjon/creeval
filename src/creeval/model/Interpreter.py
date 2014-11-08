@@ -15,14 +15,17 @@ class Interpreter:
 
 	def printStats(self):
 		print "----",self.__class__.__name__,"----"
-		print "ExploreParamSpace:"
+		print "ExploreParamSpace:\n  ",
 		pprint.pprint(self.exploreParamSpace)
-		print "ExploreParams:"
+		print "ExploreParams:\n  ",
 		pprint.pprint(self.exploreParams)
-		print "ExploitParamSpace:"
+		print "ExploitParamSpace:\n  ",
 		pprint.pprint(self.exploitParamSpace)
-		print "ExploitParams:"
+		print "ExploitParams:\n  ",
 		pprint.pprint(self.exploitParams)
+
+	def interpret(self):
+		return None
 
 class LiteralInterpreter(Interpreter):
 
