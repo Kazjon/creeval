@@ -35,9 +35,6 @@ class Predictor:
 		self.exploitParams = exploitParams
 		self.scratchPath = domain.scratchPath
 
-	def train(self,artefacts):
-		pass
-
 	def predict(self,artefact):
 		pass
 
@@ -113,8 +110,8 @@ class Predictor:
 		sys.stderr.write('Using database at %s.\n' % db_address)
 		db = MongoDB(database_address=db_address)
 
-		threshold = 1e-3
-		look_back = 10
+		threshold = 1e-2
+		look_back = 3
 		stopping = False
 		while not stopping:
 			for resource_name, resource in resources.iteritems():
@@ -256,8 +253,8 @@ class Predictor:
 
 
 class GMMPredictor(Predictor):
-	exploreParamSpace = {"n_components" : range(1, 10)}
-	exploitParamSpace = {"min_covar": (1e-8, 1e-2), "covariance_type": ["spherical", "tied", "diag", "full"]}
+	exploreParamSpace = {"n_components" : range(1, 10), "covariance_type": ["spherical", "tied", "diag", "full"]}
+	exploitParamSpace = {"min_covar": (1e-9, 1e-2)}
 	spearmintImports =  """\
 							from sklearn.mixture import GMM
 						"""

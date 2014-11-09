@@ -21,22 +21,40 @@ class CreEval:
 	generator = None
 	dirpath = None
 
-	def __init__(self, dirpath, domain, generator=None):#, pruner=Pruner(), generator=Generator()):
+	def __init__(self, dirpath, domain, generator=None, pruner=None):
 		self.domain = domain
 		self.domain.scratchPath = dirpath
 		self.dirpath = dirpath
-		#self.pruner = prune
 		self.generator = generator
-		#...
+		if pruner is not None:
+			self.pruner = pruner
+		else:
+			self.pruner = model.Pruner.NeverPruner(self)
 
 	def addInitialData(self, data):
 		self.pSpace = self.domain.initialise(data) #adds the data, then creates a pSpace
 
-	def generateModel(self):
-		model = self.generator.generate()
-		self.known_models.append(model)
-		self.active_models.append(model)
-		return model
+		#Main update function -- increments the evaluator by one step
+	def update(self):
+		if self.hasNewData():
+			pass  # Currently not implemented
+		else:
+			#At the moment the system always adds a new model when this is called -- eventually we will want this to be a decision.
+			self.generateAndTrainModel()
+			#At the moment the pruner never deletes anything.
+			self.pruner.run()
+
+	def generateAndTrainModel(self):
+		if self.generator is not None:
+			model = self.generator.generate()
+			self.known_models.append(model)
+			self.active_models.append(model)
+			model.train()
+			return model
+		return None
+
+	def hasNewData(self):
+		return False
 
 if __name__ == "__main__":
 	pass

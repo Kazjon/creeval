@@ -85,7 +85,8 @@ if __name__ == "__main__":
 
 	#Generate random models, train them and print them.
 	creeval.generator = model.Generator.RandomGenerator(dspace, domain)
-	m = creeval.generateModel()
-	m.printModel()
-	m.train()
+
+	while True:
+		creeval.update()
+		creeval.known_models[-1].printModel()
 
