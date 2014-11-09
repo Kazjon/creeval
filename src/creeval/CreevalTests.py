@@ -87,6 +87,5 @@ if __name__ == "__main__":
 	creeval.generator = model.Generator.RandomGenerator(dspace, domain)
 
 	while True:
-		creeval.update()
-		creeval.known_models[-1].printModel()
+		creeval.update(verbose=True)
 

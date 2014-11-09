@@ -35,20 +35,22 @@ class CreEval:
 		self.pSpace = self.domain.initialise(data) #adds the data, then creates a pSpace
 
 		#Main update function -- increments the evaluator by one step
-	def update(self):
+	def update(self, verbose=False):
 		if self.hasNewData():
 			pass  # Currently not implemented
 		else:
 			#At the moment the system always adds a new model when this is called -- eventually we will want this to be a decision.
-			self.generateAndTrainModel()
+			self.generateAndTrainModel(verbose)
 			#At the moment the pruner never deletes anything.
-			self.pruner.run()
+			self.pruner.run(verbose)
 
-	def generateAndTrainModel(self):
+	def generateAndTrainModel(self, verbose=False):
 		if self.generator is not None:
 			model = self.generator.generate()
 			self.known_models.append(model)
 			self.active_models.append(model)
+			if verbose:
+				model.printModel())
 			model.train()
 			return model
 		return None
