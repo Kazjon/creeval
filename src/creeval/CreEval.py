@@ -50,7 +50,7 @@ class CreEval:
 			self.known_models.append(model)
 			self.active_models.append(model)
 			if verbose:
-				model.printModel())
+				model.printModel()
 			model.train()
 			return model
 		return None
