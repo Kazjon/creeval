@@ -159,7 +159,7 @@ class Predictor:
 						stalled.append(0)
 						if len(performance) > look_back:
 							print performance[0:look_back]
-							print "Diffs: "
+							print "Diffs: ",
 							within_thresh = True
 							for i,run in enumerate(performance[0:look_back]):
 								diff = abs(run - performance[i+1])
@@ -253,15 +253,15 @@ class Predictor:
 
 
 class GMMPredictor(Predictor):
-	exploreParamSpace = {"n_components" : range(1, 10), "covariance_type": ["spherical", "tied", "diag", "full"]}
-	exploitParamSpace = {"min_covar": (1e-9, 1e-2)}
+	exploreParamSpace = {}
+	exploitParamSpace = {"min_covar": (1e-10, 1e-2), "n_components" : range(1, 10), "covariance_type": ["spherical", "tied", "diag", "full"]}
 	spearmintImports =  """\
 							from sklearn.mixture import GMM
 						"""
 
 	spearmintRun =  """\
 						def run(data, exploitParams, exploreParams):
-							gmm = GMM(exploreParams["n_components"],covariance_type = exploitParams["covariance_type"], min_covar=exploitParams["min_covar"])
+							gmm = GMM(exploitParams["n_components"],covariance_type = exploitParams["covariance_type"], min_covar=exploitParams["min_covar"])
 							gmm.fit(data)
 							return gmm.bic(data)
 					"""
